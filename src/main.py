@@ -1,13 +1,24 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from database import Base, engine
+from database import engine
 import models
-from routers import service_request
+from routers import locker, organization, service_request, log, qr_gen
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Locker Service API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    engine.dispose()
 
+app = FastAPI(title="Locker Service API", lifespan=lifespan)
+
+app.include_router(locker.router)
+app.include_router(log.router)
+app.include_router(organization.router)
 app.include_router(service_request.router)
+app.include_router(qr_gen.router)
+
 
 @app.get("/")
 def root():
