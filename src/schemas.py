@@ -56,6 +56,10 @@ class ServiceRequestResponse(ServiceRequestBase):
     class Config:
         from_attributes = True
 
+class ServiceRequestDateBase(BaseModel):
+    service_request_id: int
+    use_date: date
+
 # ============================== Log ==============================
 class LogBase(BaseModel):
     locker_id: int

@@ -15,3 +15,7 @@ def create_log(
     except HTTPException as e:
         raise e
     return now_log
+
+@router.delete("/delete/{log_id}", response_model=schemas.MessageResponse)
+def delete_log_endpoint(log_id: int, db: Session = Depends(get_db)):
+    return crud.delete_log(db, log_id)

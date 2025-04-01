@@ -15,3 +15,7 @@ def create_organization(
     except HTTPException as e:
         raise e
     return new_organization
+
+@router.delete("/delete/{name}", response_model=schemas.MessageResponse)
+def delete_organization_endpoint(name: str, db: Session = Depends(get_db)):
+    return crud.delete_organization(db, name)

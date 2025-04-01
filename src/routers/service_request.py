@@ -17,3 +17,15 @@ def create_service_request(
         raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/delete/{service_request_id}", response_model=schemas.MessageResponse)
+def delete_service_request_endpoint(service_request_id: int, db: Session = Depends(get_db)):
+    return crud.delete_service_request(db, service_request_id)
+
+@router.post("/add_date", response_model=schemas.MessageResponse)
+def add_date_endpoint(request: schemas.ServiceRequestDateBase, db: Session = Depends(get_db)):
+    return crud.add_date(db, request.service_request_id, request.use_date)
+
+@router.delete("/remove_date", response_model=schemas.MessageResponse)
+def remove_date_endpoint(request: schemas.ServiceRequestDateBase, db: Session = Depends(get_db)):
+    return crud.remove_date(db, request.service_request_id, request.use_date)

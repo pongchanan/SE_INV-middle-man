@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from fastapi import HTTPException
 import models, schemas
 
@@ -16,6 +16,14 @@ def create_organization(db: Session, org: schemas.OrganizationCreate):
         raise HTTPException(status_code=409, detail="Organization with this name already exists.")
     
     return db_org
+
+def delete_organization(db: Session, name: str):
+    db_org = db.query(models.Organization).filter(models.Organization.name == name).first()
+    if not db_org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+    db.delete(db_org)
+    db.commit()
+    return {"detail": "Organization deleted successfully"}
 
 # ============================== Locker ==============================
 def create_locker(db: Session, locker: schemas.LockerCreate):
@@ -128,6 +136,51 @@ def create_service_request(db: Session, service_request: schemas.ServiceRequestC
         use_dates=use_dates,
     )
 
+def delete_service_request(db: Session, service_request_id: int):
+    db_request = db.query(models.ServiceRequest).filter(models.ServiceRequest.service_request_id == service_request_id).first()
+    if not db_request:
+        raise HTTPException(status_code=404, detail="Service Request not found")
+    db.delete(db_request)
+    db.commit()
+    return {"detail": "Service Request deleted successfully"}
+
+def add_date(db: Session, service_request_id: int, use_date: date):
+    db_request = db.query(models.ServiceRequest).filter(models.ServiceRequest.service_request_id == service_request_id).first()
+    if not db_request:
+        raise HTTPException(status_code=404, detail="Service Request not found")
+
+    locker_id = db_request.locker_id
+
+    conflict = (
+        db.query(models.ServiceRequestDate)
+        .join(models.ServiceRequest)
+        .filter(
+            models.ServiceRequest.locker_id == locker_id,
+            models.ServiceRequestDate.use_date == use_date
+        )
+        .first()
+    )
+
+    if conflict:
+        raise HTTPException(status_code=400, detail="Locker already in use at that date")
+    
+    new_date = models.ServiceRequestDate(service_request_id=service_request_id, use_date=use_date)
+    db.add(new_date)
+    db.commit()
+    return {"detail": "Date added successfully"}
+
+def remove_date(db: Session, service_request_id: int, use_date: date):
+    db_date = db.query(models.ServiceRequestDate).filter(
+        models.ServiceRequestDate.service_request_id == service_request_id,
+        models.ServiceRequestDate.use_date == use_date
+    ).first()
+
+    if not db_date:
+        raise HTTPException(status_code=404, detail="Date not found")
+
+    db.delete(db_date)
+    db.commit()
+    return {"detail": "Date removed successfully"}
 
 # ============================== Log ==============================
 def create_log(db: Session, log: schemas.LogCreate):
@@ -168,3 +221,11 @@ def create_log(db: Session, log: schemas.LogCreate):
         timestamp=db_log.timestamp,
         service_request_id=db_log.service_request_id
     )
+
+def delete_log(db: Session, log_id: int):
+    db_log = db.query(models.Log).filter(models.Log.log_id == log_id).first()
+    if not db_log:
+        raise HTTPException(status_code=404, detail="Log not found")
+    db.delete(db_log)
+    db.commit()
+    return {"detail": "Log deleted successfully"}
