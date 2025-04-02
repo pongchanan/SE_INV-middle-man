@@ -31,7 +31,7 @@ class OrganizationResponse(OrganizationBase):
 
 # ============================== Locker ==============================
 class LockerBase(BaseModel):
-    locker_id: int
+    locker_id: str
 
 class LockerCreate(LockerBase):
     pass
@@ -50,7 +50,7 @@ class ServiceRequestCreate(ServiceRequestBase):
     use_dates: List[date]
 
 class ServiceRequestResponse(ServiceRequestBase):
-    locker_id: int
+    locker_id: str
     use_dates: List[date]
 
     class Config:
@@ -62,7 +62,7 @@ class ServiceRequestDateBase(BaseModel):
 
 # ============================== Log ==============================
 class LogBase(BaseModel):
-    locker_id: int
+    locker_id: str
     timestamp: Optional[datetime] = None
     actor: str
     action: str

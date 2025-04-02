@@ -13,7 +13,7 @@ class Organization(Base):
 class Locker(Base):
     __tablename__ = "lockers"
 
-    locker_id = mapped_column(Integer, primary_key=True, index=True, unique=True, autoincrement=False)
+    locker_id = mapped_column(String, primary_key=True, index=True, unique=True, autoincrement=False)
 
     service_requests = relationship("ServiceRequest", back_populates="locker", cascade="all, delete")
 
@@ -21,7 +21,7 @@ class ServiceRequest(Base):
     __tablename__ = "service_requests"
 
     service_request_id = mapped_column(Integer, primary_key=True, index=True)
-    locker_id = mapped_column(Integer, ForeignKey("lockers.locker_id"))
+    locker_id = mapped_column(String, ForeignKey("lockers.locker_id"))
     request_id = mapped_column(Integer)
     organization_name = mapped_column(String, ForeignKey("organizations.name"))
 
@@ -50,7 +50,7 @@ class Log(Base):
     __tablename__ = "logs"
 
     log_id = mapped_column(Integer, primary_key=True, autoincrement=True)
-    locker_id = mapped_column(Integer)
+    locker_id = mapped_column(String)
     timestamp = mapped_column(DateTime, default=func.now())
     actor = mapped_column(String)
     action = mapped_column(String)
