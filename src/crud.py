@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 from fastapi import HTTPException
 # import models, schemas
 from . import models, schemas
@@ -184,27 +184,44 @@ def remove_date(db: Session, service_request_id: int, use_date: date):
     return {"detail": "Date removed successfully"}
 
 # ============================== Log ==============================
+from datetime import timedelta
 def create_log(db: Session, log: schemas.LogCreate):
-    log_timestamp = log.timestamp if log.timestamp else datetime.now(timezone.utc)
-
+    print("WE ARE HERE 0")
+    # Convert list timestamp to datetime if needed
+    ts = log['timestamp']
+    if ts and isinstance(ts, list):
+        if len(ts) == 8:
+            # Interpret the 8th element as offset hours for tzinfo
+            tz = timezone(timedelta(hours=ts[7]))
+            log_timestamp = datetime(*ts[:7], tzinfo=tz)
+        else:
+            log_timestamp = datetime(*ts)
+    else:
+        log_timestamp = ts if ts else datetime.now(timezone.utc)
+    print("WE ARE HERE 1")
+    
     service_request = (
         db.query(models.ServiceRequest)
         .join(models.ServiceRequestDate, models.ServiceRequest.service_request_id == models.ServiceRequestDate.service_request_id)
         .filter(
-            models.ServiceRequest.locker_id == log.locker_id,
+            models.ServiceRequest.locker_id == log['locker_id'],
             models.ServiceRequestDate.use_date == log_timestamp.date()
         )
         .first()
     )
-
+    
+    print("WE ARE HERE 2")
+    
     db_log = models.Log(
-        locker_id=log.locker_id,
-        actor=log.actor,
-        action=log.action,
+        locker_id=log['locker_id'],
+        actor=log['actor'],
+        action=log['action'],
         timestamp=log_timestamp,  # Use the processed timestamp
         service_request_id=service_request.service_request_id if service_request else None
     )
     db.add(db_log)
+    
+    print("WE ARE HERE 3")
     
     try:
         db.commit()
@@ -212,8 +229,9 @@ def create_log(db: Session, log: schemas.LogCreate):
     except Exception as e:
         db.rollback()
         raise e
-
-    # Create a LogResponse with all fields from the database object
+    
+    print("WE ARE HERE 4")
+    
     return schemas.LogResponse(
         log_id=db_log.log_id,
         locker_id=db_log.locker_id,
