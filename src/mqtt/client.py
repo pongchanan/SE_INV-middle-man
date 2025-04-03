@@ -1,31 +1,32 @@
-import paho.mqtt.client as mqtt
-from dotenv import load_dotenv
-import os
+from ..crud import create_log
+from ..database import get_db
+from fastapi import Depends
+import json
 
-load_dotenv()
-broker = os.getenv("MQTT_BROKER")
-if not broker:
-    raise Exception("MQTT_BROKER not found in environment variables")
-port = int(os.getenv("MQTT_PORT"))
-if not port:
-    raise Exception("MQTT_PORT not found in environment variables")
+topic = "lockers/append_log"  # The topic to subscribe to
 
-# Callback for when a client connects to the broker
+# Define the callback function that will handle incoming messages
 def on_connect(client, userdata, flags, rc):
-    print(f"Connected to broker with result code {rc}")
-    client.subscribe("test/topic")
+    print("Connected with result code " + str(rc))
+    # Subscribe to the topic when connected
+    client.subscribe(topic)
 
-# Callback for when a message is received
 def on_message(client, userdata, msg):
-    print(f"Received message: {msg.payload.decode()} on topic {msg.topic}")
-
-def connect_mqtt(broker, port):
-    mqtt_client = mqtt.Client()
-    mqtt_client.on_connect = on_connect
-    mqtt_client.on_message = on_message
-    mqtt_client.connect(broker, port, 60)
-    mqtt_client.loop_start()
-    mqtt_client.subscribe("test/topic")
-
-# Connect to the external broker
-connect_mqtt(broker, port)
+    print(f"Message received: {msg.payload.decode()}")  # Decode the byte message
+    # Here you can process the message and call the create_log function
+    # For example, if the message is in JSON format, you can parse it and create a log entry
+    # Assuming the message payload is a JSON string that matches the LogCreate schema
+    try:
+        message_data = json.loads(msg.payload.decode())
+        # Extract the necessary fields from the message data
+        log_data = {
+            "locker_id": message_data["locker_id"],
+            "actor": message_data["actor"],
+            "action": message_data["action"],
+            "timestamp": message_data.get("timestamp")  # Optional field
+        }
+        # Call the create_log function with the extracted data
+        db = Depends(get_db())
+        print(f"created_log: {create_log(db, log_data)}")
+    except Exception as e:
+        print(f"Error processing message: {e}")

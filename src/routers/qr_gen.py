@@ -4,8 +4,9 @@ import requests
 from datetime import date
 from typing import Optional
 import json
-import schemas, crud, database, models
-from database import get_db
+# import schemas, crud, database, models
+from .. import schemas, crud, database
+from ..database import get_db
 
 import base64
 from cryptography.fernet import Fernet

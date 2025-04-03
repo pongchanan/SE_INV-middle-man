@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from datetime import date, datetime, timezone
 from fastapi import HTTPException
-import models, schemas
+# import models, schemas
+from . import models, schemas
 
 # ============================== Organization ==============================
 def create_organization(db: Session, org: schemas.OrganizationCreate):
