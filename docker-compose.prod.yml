@@ -10,7 +10,7 @@ services:
             - SECRET_KEY=1212312121
             - MQTT_BROKER=oplor.me
             - MQTT_PORT=1883
-            - DATABASE_URL=postgres://postgres:1212312121@db:5432/service_website
+            - DATABASE_URL=postgresql://postgres:1212312121@db:5432/service_website
             - POSTGRES_DB=service_website
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=1212312121

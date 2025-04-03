@@ -112,7 +112,7 @@ jobs:
                           echo "            - SECRET_KEY=1212312121" >> docker-compose.prod.yml
                           echo "            - MQTT_BROKER=oplor.me" >> docker-compose.prod.yml
                           echo "            - MQTT_PORT=1883" >> docker-compose.prod.yml
-                          echo "            - DATABASE_URL=postgres://postgres:1212312121@db:5432/service_website" >> docker-compose.prod.yml
+                          echo "            - DATABASE_URL=postgresql://postgres:1212312121@db:5432/service_website" >> docker-compose.prod.yml
                           echo "            - POSTGRES_DB=service_website" >> docker-compose.prod.yml
                           echo "            - POSTGRES_USER=postgres" >> docker-compose.prod.yml
                           echo "            - POSTGRES_PASSWORD=1212312121" >> docker-compose.prod.yml
