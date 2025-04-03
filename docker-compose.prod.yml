@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+    web:
+        image: ${REGISTRY}/${IMAGE_NAME}:${TAG:-latest}
+        restart: always
+        ports:
+            - '8030:8000'
+        environment:
+            - SECRET_KEY=1212312121
+            - MQTT_BROKER=oplor.me
+            - MQTT_PORT=1883
+            - DATABASE_URL=postgres://postgres:1212312121@db:5432/service_website
+            - POSTGRES_DB=service_website
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=1212312121
+            - PYTHONPATH=/app
+            - PYTHONUNBUFFERED=1
+        depends_on:
+            db:
+                condition: service_healthy
+
+    db:
+        image: postgres:14
+        restart: always
+        volumes:
+            - postgres_prod_data:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=service_website
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=1212312121
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U postgres']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+
+volumes:
+    postgres_prod_data:
