@@ -104,6 +104,7 @@ jobs:
                           echo "" >> docker-compose.prod.yml
                           echo "services:" >> docker-compose.prod.yml
                           echo "    web:" >> docker-compose.prod.yml
+                          echo "        command: fastapi dev src/main.py --host 0.0.0.0 --port 8000" >> docker-compose.prod.yml
                           echo "        image: \${REGISTRY}/\${IMAGE_NAME}:\${TAG:-latest}" >> docker-compose.prod.yml
                           echo "        restart: always" >> docker-compose.prod.yml
                           echo "        ports:" >> docker-compose.prod.yml
