@@ -33,7 +33,7 @@ jobs:
               run: |
                   owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
                   echo "Owner: $owner"
-                  echo "IMAGE_NAME=${owner}/se_inv" >> $GITHUB_ENV
+                  echo "IMAGE_NAME=${owner}/se_inv_middle_man" >> $GITHUB_ENV
                   echo "Full image name will be: $REGISTRY/${owner}/se_inv"
 
             - name: Login to GitHub Container Registry
