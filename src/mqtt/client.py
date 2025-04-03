@@ -23,7 +23,7 @@ def on_message(client, userdata, msg):
             "locker_id": message_data["locker_id"],
             "actor": message_data["actor"],
             "action": message_data["action"],
-            "timestamp": message_data.get("timestamp")  # Optional field
+            "timestamp": message_data["timestamp"]  # Optional field
         }
         # Call the create_log function with the extracted data
         db = Depends(get_db())
