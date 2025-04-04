@@ -22,7 +22,7 @@ class ServiceRequest(Base):
 
     service_request_id = mapped_column(Integer, primary_key=True, index=True)
     locker_id = mapped_column(String, ForeignKey("lockers.locker_id"))
-    request_id = mapped_column(Integer)
+    request_id = mapped_column(String)
     organization_name = mapped_column(String, ForeignKey("organizations.name"))
 
     organization = relationship("Organization")

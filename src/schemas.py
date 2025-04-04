@@ -42,7 +42,7 @@ class LockerResponse(LockerBase):
 
 # ============================== SR ==============================
 class ServiceRequestBase(BaseModel):
-    request_id: int
+    request_id: str
     organization_name: str
 
 class ServiceRequestCreate(ServiceRequestBase):

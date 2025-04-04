@@ -21,7 +21,7 @@ def create_service_request(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/delete/{service_request_id}", response_model=schemas.MessageResponse)
-def delete_service_request_endpoint(service_request_id: int, db: Session = Depends(get_db)):
+def delete_service_request_endpoint(service_request_id: str, db: Session = Depends(get_db)):
     return crud.delete_service_request(db, service_request_id)
 
 @router.post("/add_date", response_model=schemas.MessageResponse)
@@ -33,7 +33,7 @@ def remove_date_endpoint(request: schemas.ServiceRequestDateBase, db: Session = 
     return crud.remove_date(db, request.service_request_id, request.use_date)
 
 @router.get("/get/{request_id}/{organization_name}")
-def get_service_request_endpoint(request_id: int, organization_name: str, db: Session = Depends(get_db)):
+def get_service_request_endpoint(request_id: str, organization_name: str, db: Session = Depends(get_db)):
     services = db.query(models.ServiceRequest).filter(
         models.ServiceRequest.request_id == request_id,
         models.ServiceRequest.organization_name == organization_name
