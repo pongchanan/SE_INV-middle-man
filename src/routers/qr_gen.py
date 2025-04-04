@@ -7,6 +7,7 @@ import json
 # import schemas, crud, database, models
 from .. import schemas, crud, database
 from ..database import get_db
+from .. import models
 
 import base64
 from cryptography.fernet import Fernet
@@ -74,7 +75,7 @@ def request_qr_code(
 @router.get("/obtain_qr_str")
 def obtain_qr_str(
     user: str,
-    request_id: int,
+    request_id: str,
     organization_name: str,
     db: Session = Depends(database.get_db)
 ):  
