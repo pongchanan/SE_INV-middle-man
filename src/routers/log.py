@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from .. import schemas, crud, database
 from ..database import get_db
 
+
 router = APIRouter(prefix="/log", tags=["Logs"])
 
 @router.post("/new", response_model=schemas.LogResponse)
